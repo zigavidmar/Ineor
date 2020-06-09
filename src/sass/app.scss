@@ -1,0 +1,40 @@
+.section-booking {
+    width: 100%;
+    height: 100vh;
+    background: #fcf4ea;
+
+    .section-title {
+        text-align: center;
+        padding-top: 25px;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        padding-top: 25px;
+        margin: auto;
+        max-width: 65%;
+    }
+
+    .section-image {
+        padding-top: 50px;
+
+        .image-wrapper {
+            border: 2px solid black;
+            padding: 10px;
+            width: 75%;
+
+            img {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 2px;
+            }
+        }
+    }
+
+    .section-booking-app {
+        width: 50%;
+        margin-left: auto;
+        position: relative;
+    }
+}
