@@ -19,8 +19,7 @@ export class BookAppointment extends Component {
             price: "Service Price",
             isDisabled: true,
             serviceDuration: 0,
-            startHour: null,
-            endHour: null,
+            getWorkingHours: null,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -43,13 +42,9 @@ export class BookAppointment extends Component {
     }
 
     onChange = event => {
-
         this.setState({
-            startHour: this.state.barbers.map(barber => barber.workHours.map(hour => hour.startHour)),
-        }, () => console.log(this.state.startHour));
-        this.setState({
-            endHour: this.state.barbers.map(barber => barber.workHours.map(hour => hour.endHour)),
-        }, () => console.log(this.state.endHour)) 
+            getWorkingHours: this.state.barbers.map(barber => barber.workHours),
+        }, () => console.log(this.state.getWorkingHours));
     }
     
     handleSubmit(event) {
@@ -59,40 +54,36 @@ export class BookAppointment extends Component {
 
     componentDidMount() {
         const baseUrl = 'http://localhost:3004';
+
         // GET BARBERS
+
         fetch(baseUrl + '/barbers')
         .then(getBarbers => {
             return getBarbers.json();
         })
-
         .then(getBarbers => {
             this.setState({
                 barbers: getBarbers
             })
-/*             console.log(getBarbers);
- */        })
-        
+        })
         .catch(err => {
             alert("Failed to load our Barbers" + err)
         });
 
         // GET SERVICES
+
         fetch(baseUrl + '/services')
         .then(getServices => {
             return getServices.json();
         })
-
         .then(getServices => {
             this.setState({
                 services: getServices
             })
-/*             console.log(getServices);
- */        })
-        
+        })
         .catch(err => {
             alert("Failed to load our Services" + err)
         });
-
     }
 
 
@@ -114,7 +105,7 @@ export class BookAppointment extends Component {
                     </div>
 
                     <div className="input-wrapper">
-                        <input placeholder="Email" pattern="/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/" value={this.state.email} onChange={this.handleChange} required />
+                        <input placeholder="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$" value={this.state.email} onChange={this.handleChange} required />
                     </div>
 
                     <div className="input-wrapper">
@@ -149,7 +140,7 @@ export class BookAppointment extends Component {
                     </div>
 
                     <div className="input-wrapper" >
-                        <TimePick startHour={this.state.startHour} endHour={this.state.endHour} serviceDuration={this.state.serviceDuration} disabled={this.state.isDisabled}/>
+                        <TimePick getWorkingHours={this.state.getWorkingHours} disabled={this.state.isDisabled} />
                     </div>
 
                     <div className="input-wrapper price">

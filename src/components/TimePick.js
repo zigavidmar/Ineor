@@ -9,7 +9,7 @@ export class TimePick extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      startDate: null
+      startDate: null,
     }
   }
 
@@ -17,17 +17,14 @@ export class TimePick extends Component {
     this.setState({
       startDate: date
     });
+    console.log(this.props.getWorkingHours.map(day => day[2].endHour))
+    console.log(this.props.getWorkingHours.map(day => day[2].startHour))
   };
 
   render() {
     const { startDate } = this.state;
     const now = moment().toDate();
-    const endingHours = this.props.endHour;
-    var d = new Date();
-    var n = d.getDay();
-    calculateTime = () => {
-       
-    }
+
     return (
       <div>
          <DatePicker 
@@ -35,12 +32,11 @@ export class TimePick extends Component {
           onChange={this.handleChange}
           showTimeSelect
           showTimeSelectOnly
-          minTime={setMinutes(now, 0)}
+           minTime={setHours(setMinutes(now, 0), 0)}
           maxTime={setHours(setMinutes(now, 45), 23)}
           timeIntervals={this.props.serviceDuration}
           disabled={this.props.disabled}
           timeCaption="Time"
-          excludeTimes={[19,20]}
           dateFormat="h:mm aa"
           placeholderText="Select Time"
         />
