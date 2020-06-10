@@ -18,7 +18,9 @@ export class BookAppointment extends Component {
             startDate: new Date(),
             price: "Service Price",
             isDisabled: true,
-            serviceDuration: 0
+            serviceDuration: 0,
+            startHour: null,
+            endHour: null,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -38,21 +40,18 @@ export class BookAppointment extends Component {
             price: event.target.value,
             isDisabled: false,
         })
-        if (event.target.value == 15) {
-            this.setState({
-                serviceDuration: 15,
-            })
-        } else if (event.target.value == 20){
-            this.setState({
-                serviceDuration: 20,
-            })
-        } else {
-            this.setState({
-                serviceDuration: 50,
-            })
-        } 
     }
 
+    onChange = event => {
+
+        this.setState({
+            startHour: this.state.barbers.map(barber => barber.workHours.map(hour => hour.startHour)),
+        }, () => console.log(this.state.startHour));
+        this.setState({
+            endHour: this.state.barbers.map(barber => barber.workHours.map(hour => hour.endHour)),
+        }, () => console.log(this.state.endHour)) 
+    }
+    
     handleSubmit(event) {
         alert('Appointment submitted')
         event.preventDefault();
@@ -70,8 +69,8 @@ export class BookAppointment extends Component {
             this.setState({
                 barbers: getBarbers
             })
-            console.log(getBarbers);
-        })
+/*             console.log(getBarbers);
+ */        })
         
         .catch(err => {
             alert("Failed to load our Barbers" + err)
@@ -87,14 +86,13 @@ export class BookAppointment extends Component {
             this.setState({
                 services: getServices
             })
-            console.log(getServices);
-        })
+/*             console.log(getServices);
+ */        })
         
         .catch(err => {
             alert("Failed to load our Services" + err)
         });
 
-        
     }
 
 
@@ -124,7 +122,7 @@ export class BookAppointment extends Component {
                     </div>
 
                     <div className="input-wrapper">
-                       <select>
+                       <select onChange={this.onChange}>
                            <option hidden>Select Barber</option>
                            {barbers.map(barber => (
                                 <option onClick={() => this.props.data.changeDuration(false)} key={barber.id}>
@@ -151,7 +149,7 @@ export class BookAppointment extends Component {
                     </div>
 
                     <div className="input-wrapper" >
-                        <TimePick serviceDuration={this.state.serviceDuration} disabled={this.state.isDisabled}/>
+                        <TimePick startHour={this.state.startHour} endHour={this.state.endHour} serviceDuration={this.state.serviceDuration} disabled={this.state.isDisabled}/>
                     </div>
 
                     <div className="input-wrapper price">

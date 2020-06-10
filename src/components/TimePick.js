@@ -22,6 +22,12 @@ export class TimePick extends Component {
   render() {
     const { startDate } = this.state;
     const now = moment().toDate();
+    const endingHours = this.props.endHour;
+    var d = new Date();
+    var n = d.getDay();
+    calculateTime = () => {
+       
+    }
     return (
       <div>
          <DatePicker 
