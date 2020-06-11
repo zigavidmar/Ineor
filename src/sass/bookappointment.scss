@@ -16,7 +16,7 @@
         width: 48%;
         height: auto;
         display: inline-block;
-        padding-bottom: 20px;
+        padding-bottom: 25px;
 
         &:nth-of-type(odd) {
             float: left;
@@ -46,10 +46,24 @@
             font-weight: 500;
             letter-spacing: 0.6px;
             color: black;
+            display: block;
         }
         &.price {
             width: 100%;
         }
+
+        span.error {
+            position: absolute;
+            color: #ed4337;
+        }
+        .react-datepicker-wrapper {
+            display: block;
+        }
+    }
+
+    // HIDE DISABLED TIMEFRAMES
+    .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--disabled {
+        display: none;
     }
 
     input[type="submit"] {

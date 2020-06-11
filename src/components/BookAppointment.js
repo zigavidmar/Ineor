@@ -1,55 +1,125 @@
 import React, { Component } from 'react'
 import '../sass/bookappointment.scss';
-import { DatePick } from './DatePick';
-import { TimePick } from './TimePick';
-
+import { TimePicker } from './TimePicker';
+import { Link, Redirect } from 'react-router-dom';
 
 export class BookAppointment extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
-            surname: "",
-            email: "",
-            phoneNumber: "",
+            fields: {},
+            errors: {},
             barbers: [],
             services: [],
             startDate: new Date(),
             price: "Service Price",
             isDisabled: true,
             serviceDuration: 0,
+            serviceDisable: true,
             getWorkingHours: null,
+            test: [],
+            formValidated: null,
         };
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+    }
 
+    handleValidation(){
+        let fields = this.state.fields;
+        let errors = {};
+        let formIsValid = true;
+    
+        //Name
+        if(!fields["name"] || !fields["surname"]){
+          formIsValid = false;
+          errors["name"] = "Please enter your full name";
+        }
+    
+        if(typeof fields["name"] !== "undefined"){
+          if(!fields["name"].match(/^[a-zA-Z]+$/)){
+            formIsValid = false;
+            errors["name"] = "Only letters";
+          }      	
+        }
+    
+        //Email
+        if(!fields["email"]){
+          formIsValid = false;
+          errors["email"] = "Please enter your email";
+        }
+    
+        if(typeof fields["email"] !== "undefined"){
+          let lastAtPos = fields["email"].lastIndexOf('@');
+          let lastDotPos = fields["email"].lastIndexOf('.');
+    
+          if (!(lastAtPos < lastDotPos && lastAtPos > 0 && fields["email"].indexOf('@@') === -1 && lastDotPos > 2 && (fields["email"].length - lastDotPos) > 2)) {
+            formIsValid = false;
+            errors["email"] = "Please enter a valid email";
+          }
+        }
+
+        //Phone
+        if(!fields["phone"]){
+            formIsValid = false;
+            errors["phone"] = "Please enter phone number";
+          }
+
+        //Barber
+        if(!fields["barber"]){
+            formIsValid = false;
+            errors["barber"] = "Please select a barber";
+        }
+
+        //Service
+        if(!fields["service"]){
+            formIsValid = false;
+            errors["service"] = "Please select a service";
+        }
+
+        this.setState({errors: errors});
+        return formIsValid;
     }
     
-    handleChange(event) {
-        this.setState({name: event.target.name});
-        this.setState({surname: event.target.surname});
-        this.setState({email: event.target.email});
-        this.setState({phoneNumber: event.target.phoneNumber});
-    }
-
-    handleClick = event => {
-        this.setState({
-            price: event.target.value,
-            isDisabled: false,
-        })
-    }
-
-    onChange = event => {
-        this.setState({
-            getWorkingHours: this.state.barbers.map(barber => barber.workHours),
-        }, () => console.log(this.state.getWorkingHours));
+    handleChange(field, e){    		
+        let fields = this.state.fields;
+        fields[field] = e.target.value;        
+        this.setState({fields});
     }
     
     handleSubmit(event) {
-        alert('Appointment submitted')
         event.preventDefault();
+        if(this.handleValidation()){
+            this.setState({
+                formValidated: true,
+            })
+        } else {
+            this.setState({
+                formValidated: false,
+            })
+        }
+    }
+
+    handleClick = (field,e) => {
+        let fields = this.state.fields;
+        fields['service'] = e.target.value;        
+        this.setState({fields});
+
+        this.setState({
+            price: e.target.value,
+            isDisabled: false,
+        })
+        
+    }
+
+    onChange = ( field, e) => {
+        this.setState({
+            getWorkingHours: this.state.barbers.map(barber => barber.workHours),
+            serviceDisable: false,
+        });
+
+        let fields = this.state.fields;
+        fields['barber'] = e.target.value;        
+        this.setState({fields});
     }
 
     componentDidMount() {
@@ -84,64 +154,69 @@ export class BookAppointment extends Component {
         .catch(err => {
             alert("Failed to load our Services" + err)
         });
+
     }
 
 
     render() {
-        const { barbers, services, price } = this.state;
+        const { barbers, services, price, fields, errors, getWorkingHours, isDisabled } = this.state;
+        if (this.state.formValidated === true) {
+            return <Redirect to="barberbooked"/>
+        } else {
+            
+        }
         return (
             <div className="booking-app-wrapper">
                 <div className="booking-app-title">
                     <h2>Book your appointment</h2>
                 </div>
 
-                <form onSubmit={this.handleSubmit}>
+                <form onSubmit={this.handleSubmit.bind(this)}>
                     <div className="input-wrapper">
-                        <input type="text" placeholder="First Name" value={this.state.value} onChange={this.handleChange} required/>
+                        <input type="text" placeholder="First Name" onChange={this.handleChange.bind(this, "name")} value={fields["name"] || ''}/>
+                        <span className="error">{errors["name"]}</span>
                     </div>
 
                     <div className="input-wrapper">
-                        <input type="text" placeholder="Last Name" value={this.state.surname} onChange={this.handleChange} required/>
+                        <input type="text" placeholder="Last Name" onChange={this.handleChange.bind(this, "surname")} value={fields["surname"] || ''}/>
                     </div>
 
                     <div className="input-wrapper">
-                        <input placeholder="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$" value={this.state.email} onChange={this.handleChange} required />
+                        <input placeholder="Email" onChange={this.handleChange.bind(this, "email")} value={fields["email"] || ''} />
+                        <span className="error">{errors["email"]}</span>
                     </div>
 
                     <div className="input-wrapper">
-                        <input type="tel" pattern="[0][0-9]{8}" placeholder="Phone Number" value={this.state.phoneNumber} onChange={this.handleChange} required/>
+                        <input pattern="[0][0-9]{8}" placeholder="Phone Number" onChange={this.handleChange.bind(this, "phone")} value={fields["phone"] || ''}/>
+                        <span className="error">{errors["phone"]}</span>
                     </div>
 
                     <div className="input-wrapper">
-                       <select onChange={this.onChange}>
+                       <select value={fields["barber"] || ''} onChange={this.onChange.bind(this, "barber")}>
                            <option hidden>Select Barber</option>
                            {barbers.map(barber => (
-                                <option onClick={() => this.props.data.changeDuration(false)} key={barber.id}>
+                                <option key={barber.id}>
                                 {barber.firstName} {barber.lastName}
                                 </option>
                             ))}
                        </select>
+                       <span className="error">{errors["barber"]}</span>
                     </div>
 
                     <div className="input-wrapper">
-                       <select onChange={this.handleClick}>
+                       <select value={fields["service"] || ''} onChange={this.handleClick.bind(this, "service")} disabled={(this.state.serviceDisable === true ) ? "disabled" : null}>
                            <option hidden>Select Service</option>
                            {services.map(service => (
-                                <option 
-                                    key={service.id} value={service.price}>
+                                <option value={service.price}
+                                    key={service.id}>
                                     {service.name}
                                 </option>
                             ))}
                        </select>
+                       <span className="error">{errors["service"]}</span>
                     </div>
 
-                    <div className="input-wrapper">
-                        <DatePick/>
-                    </div>
-
-                    <div className="input-wrapper" >
-                        <TimePick getWorkingHours={this.state.getWorkingHours} disabled={this.state.isDisabled} />
-                    </div>
+                    <TimePicker getWorkingHours={getWorkingHours} disabled={isDisabled} />
 
                     <div className="input-wrapper price">
                         <input value={price === 'Service Price' ? price : 'Price is ' + price + '$'} disabled/>
