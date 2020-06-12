@@ -6,8 +6,8 @@ export class AppointmentBooked extends Component {
     constructor(props) {
         super(props);
         this.state = {
-           gifs: [],
-           selectedGif: null,
+            gif: [],
+            selectedGif: null,
         };
 
     }
@@ -23,18 +23,20 @@ export class AppointmentBooked extends Component {
             return response.json();
         })
         .then(response => {
+            const gifs = response.data;
+            const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
             this.setState({
-                gifs: response
-            }, () => console.log(this.state.gifs))
+                gif: randomGif.images.original.url
+            }, () => console.log(this.state.gif))
         })
         .catch(err => {
-            alert("Failed to load gif" + err)
+            alert("Failed to load gif " + err)
         });
 
     }
 
     render() {
-        const { gifs } = this.state;
+        const { gif } = this.state;
         return (
             <div className="section-booking-success">
                 <div className="container">
@@ -43,8 +45,8 @@ export class AppointmentBooked extends Component {
                         <h2>Appointment successfully booked</h2>
 
                         <div className="success-gif-wrapper">
-                            {/* {gifs.map(gif => (console.log(gif.images)))} */}
-                            <img src="" />
+                            
+                            <img alt="Barber gif" src={gif} />
                         </div>
                     </div>
 

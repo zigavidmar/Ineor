@@ -14,7 +14,8 @@ export class BookAppointment extends Component {
             services: [],
             startDate: new Date(),
             price: "Service Price",
-            isDisabled: true,
+            dateDisabled: true,
+            timeDisabled: true,
             serviceDuration: 0,
             serviceDisable: true,
             getWorkingHours: null,
@@ -106,7 +107,7 @@ export class BookAppointment extends Component {
 
         this.setState({
             price: e.target.value,
-            isDisabled: false,
+            dateDisabled: false,
         })
         
     }
@@ -159,7 +160,7 @@ export class BookAppointment extends Component {
 
 
     render() {
-        const { barbers, services, price, fields, errors, getWorkingHours, isDisabled } = this.state;
+        const { barbers, services, price, fields, errors, getWorkingHours, dateDisabled, timeDisabled } = this.state;
         if (this.state.formValidated === true) {
             return <Redirect to="barberbooked"/>
         } else {
@@ -216,7 +217,7 @@ export class BookAppointment extends Component {
                        <span className="error">{errors["service"]}</span>
                     </div>
 
-                    <TimePicker getWorkingHours={getWorkingHours} disabled={isDisabled} />
+                    <TimePicker getWorkingHours={getWorkingHours} datedisabled={dateDisabled} timeDisabled={timeDisabled}/>
 
                     <div className="input-wrapper price">
                         <input value={price === 'Service Price' ? price : 'Price is ' + price + '$'} disabled/>
