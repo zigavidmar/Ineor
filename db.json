@@ -72,28 +72,22 @@
       "serviceId": 1
     },
     {
-      "id": 3,
-      "startDate": 1579685400,
+      "startDate": 1593585000,
       "barberId": 1,
-      "serviceId": 2
+      "serviceId": 1,
+      "id": 3
     },
     {
-      "id": 4,
-      "startDate": 1579689000,
+      "startDate": 1593511200,
       "barberId": 1,
-      "serviceId": 1
+      "serviceId": 3,
+      "id": 4
     },
     {
-      "id": 5,
-      "startDate": 1579691400,
+      "startDate": 1593691200,
       "barberId": 1,
-      "serviceId": 2
-    },
-    {
-      "id": 6,
-      "startDate": 1579698600,
-      "barberId": 1,
-      "serviceId": 1
+      "serviceId": 1,
+      "id": 5
     }
   ],
   "workHours": [

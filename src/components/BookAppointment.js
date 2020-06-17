@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import '../sass/bookappointment.scss';
 import { TimePicker } from './TimePicker';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+
+export const baseUrl = 'http://localhost:3004';
 
 export class BookAppointment extends Component {
 
@@ -13,7 +15,8 @@ export class BookAppointment extends Component {
             barbers: [],
             services: [],
             startDate: new Date(),
-            price: "Service Price",
+            price: null,
+            servicePrice: "Service Price",
             dateDisabled: true,
             timeDisabled: true,
             serviceDuration: 0,
@@ -21,15 +24,33 @@ export class BookAppointment extends Component {
             getWorkingHours: null,
             test: [],
             formValidated: null,
+            dateValue: null,
+            timeValue: null,
+            postId: null,
         };
 
+    }
+
+    callbackGetDateValue = (date) => {
+        this.setState({dateValue: date.toLocaleDateString()}, /* () => console.log(this.state.dateValue) */)
+        let fields = this.state.fields;
+        fields['date'] = date;        
+        this.setState({fields});
+    }
+
+    callbackGetTimeValue = (time) => {
+        this.setState({timeValue: time.toLocaleTimeString()}, /* () => console.log(this.state.timeValue) */)
+        let fields = this.state.fields;
+        fields['time'] = time;        
+        this.setState({fields});
     }
 
     handleValidation(){
         let fields = this.state.fields;
         let errors = {};
         let formIsValid = true;
-    
+        /* console.log(this.state.dateValue) */
+
         //Name
         if(!fields["name"] || !fields["surname"]){
           formIsValid = false;
@@ -77,8 +98,22 @@ export class BookAppointment extends Component {
             errors["service"] = "Please select a service";
         }
 
+        // Date
+        if(!fields["date"]){
+            formIsValid = false;
+            errors["date"] = "Please select a date";
+        }
+
+        // Time
+        if(!fields["time"]){
+            formIsValid = false;
+            errors["time"] = "Please select the time";
+        }
+        
+        /* console.log(this.state.fields) */
         this.setState({errors: errors});
         return formIsValid;
+
     }
     
     handleChange(field, e){    		
@@ -92,8 +127,29 @@ export class BookAppointment extends Component {
         if(this.handleValidation()){
             this.setState({
                 formValidated: true,
-            })
-        } else {
+            });
+
+            const date = new Date(Date.parse(this.state.dateValue + " " + this.state.timeValue));
+            const unixTimestamp = Math.floor(date.getTime() / 1000);
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer my-token',
+                    'My-Custom-Header': 'foobar'
+                },
+                body: JSON.stringify({
+                    startDate: unixTimestamp,
+                    barberId:   parseInt(this.state.fields['barber']),
+                    serviceId: parseInt(this.state.fields['service']),
+                })};
+
+            fetch('http://localhost:3004/appointments', requestOptions)
+                .then(response => response.json())
+                .then(data => this.setState({ postId: data.id }))
+        
+            } else {
             this.setState({
                 formValidated: false,
             })
@@ -108,8 +164,23 @@ export class BookAppointment extends Component {
         this.setState({
             price: e.target.value,
             dateDisabled: false,
-        })
+        }, /*  () => console.log(this.state.selectedService) */ )
         
+        if (e.target.value === "1") {
+            this.setState({
+                servicePrice: "Price is 15$"
+            })
+        } else if (e.target.value === "2") {
+            this.setState({
+                servicePrice: "Price is 20$"
+            })
+        } else if (e.target.value === "3") {
+            this.setState({
+                servicePrice: "Price is 30$"
+            })
+        } else {
+            
+        }
     }
 
     onChange = ( field, e) => {
@@ -124,7 +195,6 @@ export class BookAppointment extends Component {
     }
 
     componentDidMount() {
-        const baseUrl = 'http://localhost:3004';
 
         // GET BARBERS
 
@@ -158,9 +228,10 @@ export class BookAppointment extends Component {
 
     }
 
+    
 
     render() {
-        const { barbers, services, price, fields, errors, getWorkingHours, dateDisabled, timeDisabled } = this.state;
+        const { barbers, services, servicePrice, fields, errors, getWorkingHours, dateDisabled, timeDisabled } = this.state;
         if (this.state.formValidated === true) {
             return <Redirect to="barberbooked"/>
         } else {
@@ -196,7 +267,7 @@ export class BookAppointment extends Component {
                        <select value={fields["barber"] || ''} onChange={this.onChange.bind(this, "barber")}>
                            <option hidden>Select Barber</option>
                            {barbers.map(barber => (
-                                <option key={barber.id}>
+                                <option value={barber.id} key={barber.id}>
                                 {barber.firstName} {barber.lastName}
                                 </option>
                             ))}
@@ -208,7 +279,7 @@ export class BookAppointment extends Component {
                        <select value={fields["service"] || ''} onChange={this.handleClick.bind(this, "service")} disabled={(this.state.serviceDisable === true ) ? "disabled" : null}>
                            <option hidden>Select Service</option>
                            {services.map(service => (
-                                <option value={service.price}
+                                <option value={service.id}
                                     key={service.id}>
                                     {service.name}
                                 </option>
@@ -217,10 +288,18 @@ export class BookAppointment extends Component {
                        <span className="error">{errors["service"]}</span>
                     </div>
 
-                    <TimePicker getWorkingHours={getWorkingHours} datedisabled={dateDisabled} timeDisabled={timeDisabled}/>
+                    <TimePicker 
+                    serviceId={this.state.price}
+                    errors={this.state.errors}
+                    callbackGetTimeValue={this.callbackGetTimeValue}
+                    callbackGetDateValue={this.callbackGetDateValue} 
+                    getWorkingHours={getWorkingHours} 
+                    datedisabled={dateDisabled} 
+                    timeDisabled={timeDisabled}
+                    />
 
                     <div className="input-wrapper price">
-                        <input value={price === 'Service Price' ? price : 'Price is ' + price + '$'} disabled/>
+                        <input value={servicePrice} disabled/>
                     </div>
                     
                     <input type="submit" value="Book appointment" />
