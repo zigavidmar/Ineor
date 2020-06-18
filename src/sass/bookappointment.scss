@@ -94,5 +94,9 @@
         text-transform: uppercase;
         color: white;
         cursor: pointer;
+        transition: .3s all ease;
+        &:hover {
+            background: #da7647;
+        }
     }
 }
