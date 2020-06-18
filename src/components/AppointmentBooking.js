@@ -20,7 +20,7 @@ export class AppointmentBooking extends Component {
 
                     <div className="section-image">
                         <div className="image-wrapper">
-                        <LazyLoad throttle={200} height={300} once >
+                        <LazyLoad throttle={200} once >
                             <img alt="Barber banner" src={SectionImage}/>
                         </LazyLoad>
                         </div>
