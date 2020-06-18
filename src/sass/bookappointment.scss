@@ -45,6 +45,11 @@
                 letter-spacing: 0.6px;
                 color: black;
             }
+            &:disabled {
+                background: rgba(239, 239, 239, 0.3);
+                background-color: rgba(239, 239, 239, 0.3);
+                opacity: 1;
+            }
         }
 
         select {
@@ -54,9 +59,6 @@
             letter-spacing: 0.6px;
             color: black;
             display: block;
-            &:disabled {
-                opacity: 0.9;
-            }
         }
         &.price {
             width: 100%;
